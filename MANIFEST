@@ -1,0 +1,14 @@
+Build.PL
+Changes
+lib/Class/Define.pm
+MANIFEST			This list of files
+README
+t/00-load.t
+t/01-core.t
+t/boilerplate.t
+t/cover.css
+t/coverage.html
+t/pod-coverage.t
+t/pod.t
+Makefile.PL
+META.yml

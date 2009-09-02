@@ -1,0 +1,55 @@
+Class-Define
+
+Class::Define can define a class easily like the following sample.
+
+use Class::Define;
+Class::Define->define('Magazine', {
+    base => 'Book',
+    mixins => ['Cloneable'],
+    methods => {
+        price => sub { }
+    }
+});
+
+my $magazine = Magazine->new;
+
+You can inherit other class and create new class in sorcue code.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc Class::Define
+
+You can also look for information at:
+
+    RT, CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Define
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/Class-Define
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/Class-Define
+
+    Search CPAN
+        http://search.cpan.org/dist/Class-Define/
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2009 Yuki Kimoto
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
