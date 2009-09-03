@@ -5,26 +5,26 @@ use Test::More 'no_plan';
 use Class::Define;
 
 {
-    Class::Define->define('Module1', {
+    my $first = Class::Define->define('Module1', {
         methods => {
             module1_m1 => sub { return 'module1_m1' },
             module1_m2 => sub { return 'module1_m2' }
         }
     });
     ok(Module1->can('isa'), 'define class');
-    
+    ok($first);
     can_ok('Module1', qw/new module1_m1 module1_m2/);
     
     my $m = Module1->new;
     is($m->module1_m1, 'module1_m1', 'define method module1_m1');
     is($m->module1_m2, 'module1_m2', 'define method module1_m2');
 
-    Class::Define->define('Module1', {
+    my $again = Class::Define->define('Module1', {
         methods => {
             module1_m3 => sub { return 'module1_m1' },
         }
     });
-    
+    ok(!$again);
     ok(!Module1->can('module1_m3'), 'seconde define');
 }
 
@@ -76,13 +76,13 @@ use Class::Define;
         methods => {
             module5_m1 => sub { return 'module5_m1' }
         },
-        process => sub {
+        initialize => sub {
             my $class = shift;
             $val = $class->module5_m1
         }
     });
     
-    is($val, 'module5_m1', 'process');
+    is($val, 'module5_m1', 'initialize');
 }
 
 {
@@ -119,10 +119,10 @@ use Class::Define;
     
     eval {
         Class::Define->define('Module8', {
-            process => 'a'
+            initialize => 'a'
         });
     };
-    like($@, qr/process must be code ref/, 'process must be code ref');
+    like($@, qr/initialize must be code ref/, 'initialize must be code ref');
 }
 
 {
@@ -138,4 +138,13 @@ use Class::Define;
       ->m1_to(\my $m1_result);
     
     is($m1_result, 1, 'define attribute');
+}
+
+{
+    eval {
+        Class::Define->define('Module9', {
+            no_exist => {}
+        });
+    };
+    like($@, qr/'no_exist' is invalid option/, 'invalid option');
 }
