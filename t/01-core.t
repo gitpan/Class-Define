@@ -19,12 +19,11 @@ use Class::Define;
     is($m->module1_m1, 'module1_m1', 'define method module1_m1');
     is($m->module1_m2, 'module1_m2', 'define method module1_m2');
 
-    my $again = Class::Define->define('Module1', {
+    Class::Define->define('Module1', {
         methods => {
             module1_m3 => sub { return 'module1_m1' },
         }
     });
-    ok(!$again);
     ok(!Module1->can('module1_m3'), 'seconde define');
 }
 
@@ -147,4 +146,37 @@ use Class::Define;
         });
     };
     like($@, qr/'no_exist' is invalid option/, 'invalid option');
+}
+
+{
+    my @class_names = ();
+    for (my $i = 0; $i < 3; $i++) {
+        my $class = Class::Define->define({
+            base => 'Module1',
+            methods => {
+                module1_m1 => sub { return "module${i}_m1" },
+                module1_m2 => sub { return "module${i}_m2" }
+            }
+        });
+        
+        push @class_names, $class->name;
+        
+        like($class->name, qr/Class::Define::AnonymousClass::\d+/, 'anonymous class name');
+        
+        my $o = $class->new;
+        isa_ok($o, 'Module1');
+        is($o->module1_m1, "module${i}_m1", 'define method module1_m1');
+        is($o->module1_m2, "module${i}_m2", 'define method module1_m2');
+    }
+    
+    foreach my $class_name (@class_names) {
+        ok(!$class_name->can('isa'), 'unload class');
+        no strict 'refs';
+        my $ANONYMOUS_CLASS_PREFIX = $Class::Define::AnonymousClass::ANONYMOUS_CLASS_PREFIX;
+        my ($id) = $class_name =~ /^$ANONYMOUS_CLASS_PREFIX(\d+)/;
+        ok(!${$ANONYMOUS_CLASS_PREFIX}{$id . '::'});
+        ok(!%{$class_name . '::'});
+        ok(!@{$class_name . '::ISA'});
+        ok(!$Object::Simple::META->{$class_name});
+    }
 }

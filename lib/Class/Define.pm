@@ -1,19 +1,55 @@
 package Class::Define;
-
-our $VERSION = '0.0201';
-
 use warnings;
 use strict;
 
-use Carp;
+our $VERSION = '0.0301';
+
+require Carp;
 
 # Valid option names for define method
 my %VALID_DEFINE_OPTIONS = map {$_ => 1} qw/base mixins methods initialize/;
 
 # Define class
 sub define {
-    shift;
-    my $class = shift || '';
+    my $self = shift;
+    
+    # Define anonymous class
+    if (ref $_[0]) {
+        return $self->define_anonymous_class(@_);
+    }
+    # Define named class
+    else {
+        return $self->define_named_class(@_);
+    }
+}
+
+# Define named class
+sub define_named_class {
+    my $self = shift;
+    
+    # Class name
+    my $class;
+    
+    # Anonymous class
+    if (ref $_[0]) {
+        
+        # ID for anonymous class
+        my $id;
+        foreach my $info ((caller 0)[0 .. 2]) {
+            $id .= $info || '';
+        }
+        
+        Carp::croak("Cannot create anoymouse class id") unless $id; # maybe never ocuured.
+        
+        # Create anonymous class name
+        $class = __PACKAGE__->create_anonymous_class_name($id);
+    }
+    
+    # Named class
+    else {
+        $class = shift || '';
+    }
+    
     my $options = shift || {};
     
     # Check options
@@ -30,14 +66,14 @@ sub define {
     
     # Class is valid name?
     Carp::croak("$class is bad name")
-      unless __PACKAGE__->_is_valid_class_name($class);
+      unless __PACKAGE__->is_valid_class_name($class);
     
     # In case the class is already defined
-    return if $class->can('isa');
+    return $class if $class->can('isa');
     
     # Base class is valid name?
     Carp::croak("$base_class is bad name")
-      if $base_class && ! __PACKAGE__->_is_valid_class_name($base_class);
+      if $base_class && ! __PACKAGE__->is_valid_class_name($base_class);
     
     # Mixins must be array ref
     Carp::croak("mixins must be array ref")
@@ -46,7 +82,7 @@ sub define {
     # Mixin classes are valid name?
     foreach my $mixin_class (@$mixin_classes) {
         Carp::croak("$mixin_class is bad name")
-          unless __PACKAGE__->_is_valid_class_name($mixin_class);
+          unless __PACKAGE__->is_valid_class_name($mixin_class);
     }
     
     # Initialize must be code ref
@@ -107,15 +143,107 @@ sub define {
     # Execute initialize process
     $initialize->($class) if $initialize;
     
-    return 1;
+    return $class;
+}
+
+# Define anonymous class
+sub define_anonymous_class {
+    my ($self, $options) = @_;
+    my $class = Class::Define::AnonymousClass->create({options => $options});
+    return $class;
 }
 
 # Class name is valid?
-sub _is_valid_class_name {
+sub is_valid_class_name {
     my ($self, $class_name) = @_;
     $class_name ||= '';
     return $class_name =~ /^(\w+::)*\w+$/ ? 1 : 0;
 }
+
+1;
+
+package Class::Define::AnonymousClass;
+use strict;
+use warnings;
+require Carp;
+
+our $VERSION = $Class::Define::VERSION;
+
+our $ANONYMOUS_CLASS_PREFIX = 'Class::Define::AnonymousClass::';
+
+# Constructor
+sub create {
+    my $class = shift;
+    my $self = {};
+    bless $self, $class;
+    
+    my $args = shift;
+    my $options = $args->{options} || {};
+    
+    my $class_name = $self->create_anonymous_class_name;
+    Class::Define->define($class_name, $options);
+    $self->name($class_name);
+    return $self;
+}
+
+# Class Builder
+sub new {
+    my $self = shift;
+    my $class = $self->name;
+    return $class->new(@_);
+}
+
+
+# Create anonymous class name by random
+sub create_anonymous_class_name {
+    my $self = shift;
+    
+    while (1) {
+        # Create ID
+        my $id = time . int(rand 10000000);
+        
+        # Create class name
+        my $class_name = "${ANONYMOUS_CLASS_PREFIX}$id";
+        
+        return $class_name unless $class_name->can('isa');
+    }
+}
+
+# Class name
+sub name {
+    my $self = shift;
+    if (@_) {
+        $self->{name} = $_[0];
+    }
+    return $self->{name};
+}
+
+# Destructor
+sub DESTROY {
+    my $self = shift;
+    
+    # Unload anonymous class
+    $self->unload_anonymous_class;
+}
+
+sub unload_anonymous_class {
+    my $self = shift;
+    
+    # Get class name
+    my $class = $self->name;
+    
+    # Get ID
+    my ($id) = $class =~ /^$ANONYMOUS_CLASS_PREFIX(\d+)/;
+    
+    # delete infomations to unload class
+    no strict 'refs';
+    @{$class . '::ISA'} = ();
+    %{$class . '::'} = ();
+    delete ${$ANONYMOUS_CLASS_PREFIX}{$id . '::'};
+    delete $Object::Simple::META->{$class};
+}
+
+1;
 
 =head1 NAME
 
@@ -123,7 +251,7 @@ Class::Define - define class easily and anywhere
 
 =head1 VERSION
 
-Version 0.0201
+Version 0.0301
 
 =head1 SYNOPSIS
 
@@ -204,6 +332,17 @@ This is equal to
     
     Object::Simple->build_class;
 
+You can also define anonymous class if you do not write class name.
+
+    my $anonymous_class = Class::Define->define({
+        base => 'Book',
+        methods => {
+            price => sub { };
+        }
+    });
+    
+    my $obj = $anonymous_class->new;
+    
 =head1 SEE ALSO
 
 L<Object::Simple>, L<Class::MOP>

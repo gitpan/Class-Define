@@ -1,7 +1,9 @@
 Build.PL
 Changes
 lib/Class/Define.pm
+Makefile.PL
 MANIFEST			This list of files
+META.yml
 README
 t/00-load.t
 t/01-core.t
@@ -10,5 +12,3 @@ t/cover.css
 t/coverage.html
 t/pod-coverage.t
 t/pod.t
-Makefile.PL
-META.yml
