@@ -2,7 +2,7 @@ package Class::Define;
 use warnings;
 use strict;
 
-our $VERSION = '0.0301';
+our $VERSION = '0.0302';
 
 require Carp;
 
@@ -127,7 +127,7 @@ sub define_named_class {
         # Define acessor to Object::Simple functions
         if (ref $methods->{$name} eq 'ARRAY') {
             my ($code_attribute_type, $code_ref) = @{$methods->{$name}};
-            Object::Simple->resist_attribute_info($class, $name, $code_ref, $code_attribute_type);
+            Object::Simple->resist_accessor_info($class, $name, $code_ref, $code_attribute_type);
         }
         
         # Define method using normarl way
@@ -251,7 +251,7 @@ Class::Define - define class easily and anywhere
 
 =head1 VERSION
 
-Version 0.0301
+Version 0.0302
 
 =head1 SYNOPSIS
 

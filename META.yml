@@ -1,6 +1,6 @@
 ---
 name: Class-Define
-version: 0.0301
+version: 0.0302
 author:
   - 'Yuki Kimoto <kimoto.yuki@gmail.com>'
 abstract: define class easily and anywhere
@@ -8,13 +8,13 @@ license: perl
 resources:
   license: ~
 requires:
-  Object::Simple: 2.0101
+  Object::Simple: 2.0601
 build_requires:
   Test::More: 0
 provides:
   Class::Define:
     file: lib/Class/Define.pm
-    version: 0.0301
+    version: 0.0302
   Class::Define::AnonymousClass:
     file: lib/Class/Define.pm
     version: 0

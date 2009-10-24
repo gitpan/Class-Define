@@ -11,7 +11,7 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
     },
     requires => {
-        'Object::Simple' => 2.0101
+        'Object::Simple' => 2.0601
     },
     add_to_cleanup      => [ 'Class-Define-*' ],
     create_makefile_pl => 'traditional',
