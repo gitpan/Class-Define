@@ -1,23 +1,20 @@
 ---
 name: Class-Define
-version: 0.0302
+version: 0.0401
 author:
   - 'Yuki Kimoto <kimoto.yuki@gmail.com>'
 abstract: define class easily and anywhere
 license: perl
 resources:
   license: ~
-requires:
-  Object::Simple: 2.0601
 build_requires:
   Test::More: 0
 provides:
   Class::Define:
     file: lib/Class/Define.pm
-    version: 0.0302
+    version: 0.0401
   Class::Define::AnonymousClass:
     file: lib/Class/Define.pm
-    version: 0
 generated_by: Module::Build version 0.31012
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

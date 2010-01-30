@@ -7,8 +7,7 @@ WriteMakefile
           'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Class/Define.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0,
-                           'Object::Simple' => '2.0601'
+                           'Test::More' => 0
                          }
         )
 ;

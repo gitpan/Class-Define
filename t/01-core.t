@@ -7,6 +7,10 @@ use Class::Define;
 {
     my $first = Class::Define->define('Module1', {
         methods => {
+            new        => sub {
+                my $class = shift;
+                bless {@_}, $class
+            },
             module1_m1 => sub { return 'module1_m1' },
             module1_m2 => sub { return 'module1_m2' }
         }
@@ -45,31 +49,6 @@ use Class::Define;
 }
 
 {
-    Class::Define->define('Module3', {
-        mixins => ['Module1', 'Module2']
-    });
-    
-    my $m = Module3->new;
-    is($m->module1_m1, 'module1_m1', 'mixins define method module1_m1');
-    is($m->module1_m2, 'module1_m2', 'mixins define method module1_m2');
-    is($m->module2_m1, 'module2_m1', 'mixins define method module2_m1');
-    is($m->module2_m2, 'module2_m2', 'mixins define method module2_m2');
-}
-
-{
-    Class::Define->define('Module4', {
-        base => 'Module1',
-        mixins => ['Module2']
-    });
-    
-    my $m = Module4->new;
-    is($m->module1_m1, 'module1_m1', 'mixins define method module1_m1');
-    is($m->module1_m2, 'module1_m2', 'mixins define method module1_m2');
-    is($m->module2_m1, 'module2_m1', 'mixins define method module2_m1');
-    is($m->module2_m2, 'module2_m2', 'mixins define method module2_m2');
-}
-
-{
     my $val;
     Class::Define->define('Module5::MM::MM', {
         methods => {
@@ -103,40 +82,11 @@ use Class::Define;
     like($@, qr/= is bad name/, 'base class is bad name');
     
     eval {
-        Class::Define->define('Module7', {
-            mixins => 'a'
-        });
-    };
-    like($@, qr/mixins must be array ref/, 'mixin must be array ref');
-    
-    eval {
-        Class::Define->define('Module8', {
-            mixins => ['=']
-        });
-    };
-    like($@, qr/= is bad name/, 'mixins class is bad name');
-    
-    eval {
         Class::Define->define('Module8', {
             initialize => 'a'
         });
     };
     like($@, qr/initialize must be code ref/, 'initialize must be code ref');
-}
-
-{
-    Class::Define->define('Module9', {
-        methods => {
-            m1    => ['Attr', {default => 1}],
-            m1_to => ['Output', sub{target => 'm1'}]
-        }
-    });
-
-    Module9
-      ->new
-      ->m1_to(\my $m1_result);
-    
-    is($m1_result, 1, 'define attribute');
 }
 
 {
@@ -177,6 +127,5 @@ use Class::Define;
         ok(!${$ANONYMOUS_CLASS_PREFIX}{$id . '::'});
         ok(!%{$class_name . '::'});
         ok(!@{$class_name . '::ISA'});
-        ok(!$Object::Simple::META->{$class_name});
     }
 }

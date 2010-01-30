@@ -10,9 +10,6 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
-    requires => {
-        'Object::Simple' => 2.0601
-    },
     add_to_cleanup      => [ 'Class-Define-*' ],
     create_makefile_pl => 'traditional',
 );

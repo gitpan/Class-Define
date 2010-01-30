@@ -15,4 +15,4 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-all_pod_coverage_ok({also_private => [qw/(is_valid_class_name|create_anonymous_class_name|define_anonymous_class|define_named_class)/]});
+all_pod_coverage_ok({also_private => [qw/(is_valid_class_name|create_anonymous_class_name|define_anonymous_class|define_class)/]});
