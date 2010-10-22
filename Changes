@@ -1,3 +1,5 @@
+0.0402
+  added comment "This module will be removed in nearly feature."
 0.0401
   Don't depend on 'Object::Simple'. 
 0.0302

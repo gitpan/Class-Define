@@ -206,13 +206,17 @@ package Class::Define;
 
 Class::Define - define class easily and anywhere
 
+=head1 CAUTION
+
+B<This module will be removed in nearly feature because I think this is buggy and not useful>
+
 =head1 VERSION
 
-Version 0.0401
+Version 0.0402
 
 =cut
 
-our $VERSION = 0.0401;
+our $VERSION = 0.0402;
 
 =head1 SYNOPSIS
 
